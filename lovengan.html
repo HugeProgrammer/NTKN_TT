@@ -8,10 +8,13 @@
     <style>
         /* CSS căn giữa video và lớp hiển thị */
         #centralVideo {
+            /* 4 dòng này là BẮT BUỘC để căn giữa màn hình */
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); 
+            
+            /* Các thuộc tính làm đẹp và kích thước */
             max-width: 80vw;
             max-height: 70vh;
             border-radius: 15px;
@@ -93,7 +96,7 @@
 </head>
 <body>
 
-    <video id="centralVideo" src="./img/video.mp4" autoplay controls playsinline></video>
+<video id="centralVideo" src="./img/video.mp4" autoplay controls playsinline disablePictureInPicture controlsList="nofullscreen nodownload noremoteplayback"></video>
 
     <div id="rain-container"></div>
 
