@@ -2,20 +2,26 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ảnh Ngẫu Nhiên ❤️</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS căn giữa video và lớp hiển thị */
+        /* === TỐI ƯU MOBILE: CHỐNG TRÀN VIỀN NGANG === */
+        body, html {
+            overflow-x: hidden; 
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* CSS căn giữa video */
         #centralVideo {
-            /* 4 dòng này là BẮT BUỘC để căn giữa màn hình */
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%); 
-            
-            /* Các thuộc tính làm đẹp và kích thước */
-            max-width: 80vw;
+            max-width: 90vw; /* Tăng xíu cho mobile dễ nhìn */
             max-height: 70vh;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(233, 30, 99, 0.5);
@@ -33,7 +39,7 @@
             z-index: 100;
         }
 
-        /* === CSS CHO BẢNG CÂU HỎI VÀ NÚT BẤM === */
+        /* === CSS BẢNG CÂU HỎI === */
         #decisionOverlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -53,26 +59,30 @@
             margin-bottom: 30px;
             text-shadow: 0 0 15px #e91e63;
             text-align: center;
+            padding: 0 10px;
         }
 
         .btn-container {
             position: relative;
-            width: 300px;
-            height: 100px;
+            width: 90%; /* Đổi thành % để vừa mọi điện thoại */
+            max-width: 320px;
+            height: 80px;
             display: flex;
             justify-content: space-around;
             align-items: center;
         }
 
         .btn-decision {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 12px 25px; /* Giảm nhẹ để vừa mobile */
+            font-size: 1.1rem;
             border: none;
             border-radius: 25px;
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            /* Chống double-tap zoom trên iOS */
+            touch-action: manipulation; 
         }
 
         #btnAgree {
@@ -80,17 +90,12 @@
             color: white;
         }
 
-        #btnAgree:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 20px rgba(255, 64, 129, 0.6);
-        }
-
         #btnDecline {
             background-color: #e0e0e0;
             color: #333;
             position: absolute; 
             right: 10px;
-            transition: all 0.1s; /* Thêm tí mượt mà khi nút bay đi */
+            transition: all 0.1s; 
         }
     </style>
 </head>
@@ -101,7 +106,7 @@
     <div id="rain-container"></div>
 
     <div id="decisionOverlay">
-        <h2>Yêu anh chứ? ❤️</h2>
+        <h2>Cho anh được làm người yêu em nha? ❤️</h2>
         <div class="btn-container">
             <button id="btnAgree" class="btn-decision">Đồng ý</button>
             <button id="btnDecline" class="btn-decision">Từ chối</button>
@@ -119,7 +124,6 @@
 <script>
     const popup = document.getElementById('popup');
     const popupImg = document.getElementById('popupImg');
-    const popupMessage = document.getElementById('popupMessage');
     const rainContainer = document.getElementById('rain-container');
     const centralVideo = document.getElementById('centralVideo'); 
     const closePopupButton = document.getElementById('closePopupButton');
@@ -147,17 +151,17 @@
         }
     });
 
-    // === CHỨC NĂNG: NÚT "TỪ CHỐI" TROLL (HỖ TRỢ ĐIỆN THOẠI) ===
+    // === NÚT TỪ CHỐI BỎ CHẠY ===
     function moveDeclineButton(e) {
-        if (e) e.preventDefault(); // Chặn click trên điện thoại
-
+        if (e) e.preventDefault(); 
         btnDecline.style.position = 'fixed';
         
-        const maxX = window.innerWidth - btnDecline.offsetWidth - 20; // Trừ hao lề
-        const maxY = window.innerHeight - btnDecline.offsetHeight - 20;
+        // Tối ưu để nút không văng ra khỏi rìa màn hình điện thoại
+        const maxX = window.innerWidth - btnDecline.offsetWidth - 15; 
+        const maxY = window.innerHeight - btnDecline.offsetHeight - 15;
         
-        const randomX = Math.floor(Math.random() * maxX) + 10;
-        const randomY = Math.floor(Math.random() * maxY) + 10;
+        const randomX = Math.floor(Math.random() * maxX) + 5;
+        const randomY = Math.floor(Math.random() * maxY) + 5;
         
         btnDecline.style.left = randomX + 'px';
         btnDecline.style.top = randomY + 'px';
@@ -168,40 +172,96 @@
     btnDecline.addEventListener('click', moveDeclineButton);
 
 
-    // === CHỨC NĂNG: BẤM "ĐỒNG Ý" ===
+    // === BẤM ĐỒNG Ý & MEGA HAPPY ENDING ===
     btnAgree.addEventListener('click', () => {
         decisionOverlay.style.display = 'none';
         centralVideo.loop = true;
         centralVideo.play();
-        triggerHeartExplosion();
+        triggerMegaHappyEnding();
     });
 
-    function triggerHeartExplosion() {
-        for (let i = 0; i < 80; i++) {
+    function triggerMegaHappyEnding() {
+        // 1. Bom tim nổ (Giảm xuống 100 để máy yếu không giật)
+        for (let i = 0; i < 100; i++) { 
             setTimeout(() => {
                 const heart = document.createElement('div');
-                heart.innerHTML = '💖';
+                heart.innerHTML = ['💖', '💕', '💘', '💗', '💓'][Math.floor(Math.random() * 5)];
                 heart.style.position = 'fixed';
                 heart.style.left = '50%';
                 heart.style.top = '50%';
-                heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                heart.style.fontSize = (Math.random() * 30 + 15) + 'px'; 
                 heart.style.zIndex = '9999';
                 heart.style.pointerEvents = 'none'; 
-                heart.style.transition = 'all 2s cubic-bezier(0.25, 1, 0.5, 1)';
-                
+                heart.style.transition = 'all 2.5s cubic-bezier(0.25, 1, 0.5, 1)';
                 document.body.appendChild(heart);
                 
                 const angle = Math.random() * Math.PI * 2;
-                const radius = Math.random() * (window.innerWidth * 0.5) + 50; 
+                const radius = Math.random() * (window.innerWidth * 0.6) + 40; 
                 
                 setTimeout(() => {
-                    heart.style.transform = `translate(${Math.cos(angle) * radius}px, ${Math.sin(angle) * radius}px) scale(0) rotate(${Math.random() * 360}deg)`;
+                    heart.style.transform = `translate(${Math.cos(angle) * radius}px, ${Math.sin(angle) * radius}px) scale(0) rotate(${Math.random() * 720}deg)`; 
                     heart.style.opacity = '0';
                 }, 50);
-                
-                setTimeout(() => heart.remove(), 2000);
-            }, i * 15); 
+                setTimeout(() => heart.remove(), 2500);
+            }, i * 10); 
         }
+
+        // 2. Mưa pháo giấy
+        const colors = ['#ff4081', '#00e5ff', '#ffeb3b', '#76ff03', '#e040fb', '#ffffff'];
+        let confettiInterval = setInterval(() => {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-20px';
+            confetti.style.width = (Math.random() * 8 + 4) + 'px';
+            confetti.style.height = (Math.random() * 16 + 8) + 'px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.zIndex = '9998';
+            confetti.style.borderRadius = (Math.random() > 0.5) ? '50%' : '0'; 
+            confetti.style.opacity = Math.random() + 0.5;
+            confetti.style.transition = `top ${Math.random() * 3 + 2}s linear, transform ${Math.random() * 3 + 2}s linear`;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.style.top = '110vh'; 
+                confetti.style.transform = `rotate(${Math.random() * 720}deg)`;
+            }, 50);
+            setTimeout(() => confetti.remove(), 5000);
+        }, 50);
+
+        // 3. Chữ I LOVE YOU 3000 căn giữa chuẩn
+        setTimeout(() => {
+            const text = document.createElement('div'); 
+            text.innerHTML = "Yêu bé nhiều lắm luôn á! ❤️"; 
+            
+            text.style.position = 'fixed';
+            text.style.left = '50%';
+            text.style.transform = 'translateX(-50%)'; 
+            text.style.width = '90%'; // Đảm bảo vừa màn hình đt
+            text.style.textAlign = 'center';
+            // Bỏ nowrap để chữ có thể xuống dòng nếu đt quá nhỏ
+            text.style.wordWrap = 'break-word'; 
+            
+            text.style.top = '50%'; 
+            text.style.color = '#fff';
+            text.style.fontWeight = 'bold';
+            text.style.fontSize = 'clamp(1.8rem, 6vw, 4rem)'; // Co giãn siêu tốt
+            text.style.fontFamily = 'Arial, sans-serif';
+            text.style.textShadow = '0 0 10px #ff4081, 0 0 20px #ff4081, 0 0 40px #ff4081, 0 0 80px #ff4081';
+            text.style.zIndex = '10000';
+            text.style.opacity = '0';
+            text.style.pointerEvents = 'none';
+            text.style.transition = 'opacity 2.5s ease-in-out, top 2.5s ease-out';
+            text.style.background = 'transparent';
+            
+            document.body.appendChild(text);
+            
+            setTimeout(() => {
+                text.style.opacity = '1';
+                text.style.top = '8%'; // Bay lên trên video
+            }, 100);
+            
+        }, 1500); 
     }
 
 
@@ -210,13 +270,14 @@
         const img = document.createElement('img');
         img.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
         img.classList.add('random-image');
-        img.style.left = `${10 + Math.random() * 80}vw`;
-        img.style.top = `${25 + Math.random() * 65}vh`;
+        
+        // Giới hạn max 70vw để ảnh không tràn ra ngoài lề phải
+        img.style.left = `${Math.random() * 70 + 5}vw`;
+        img.style.top = `${25 + Math.random() * 50}vh`;
         img.style.cursor = "pointer";
 
         img.addEventListener('click', () => {
             stopEffects(); 
-            // centralVideo.pause();
             popupImg.src = img.src;
             popup.classList.add('active');
         });
@@ -231,7 +292,7 @@
         const icons = ['🌸', '💖', '❤️'];
         const icon = icons[Math.floor(Math.random() * icons.length)];
         f.textContent = icon;
-        f.style.left = (Math.random()*100)+'%';
+        f.style.left = (Math.random()*90)+'%'; // Giữ lại 1 chút lề
         f.style.animationDuration = `${5 + Math.random()*6}s`;
         f.style.fontSize = `${12 + Math.random()*18}px`;
         f.style.position = 'absolute';
@@ -246,18 +307,16 @@
     function closePopup() {
         popup.classList.remove("active");
         startEffects(); 
-        centralVideo.play(); 
     }
 
     popup.addEventListener("click", (e) => {
         if (e.target === popup) closePopup();
     });
-
     closePopupButton.addEventListener("click", closePopup);
 
     function startEffects() {
-        if (!imageTimer) imageTimer = setInterval(createRandomImage, 300);
-        if (!flowerTimer) flowerTimer = setInterval(spawnFlower, 130); 
+        if (!imageTimer) imageTimer = setInterval(createRandomImage, 400); // Giãn nhẹ tgian sinh ảnh
+        if (!flowerTimer) flowerTimer = setInterval(spawnFlower, 150); 
     }
 
     function stopEffects() {
@@ -272,6 +331,7 @@
 
     startEffects();
 
+    // Mẹo lách luật Auto-play có tiếng
     document.body.addEventListener('click', () => {
         if (centralVideo.paused && !hasShownDecision) {
             centralVideo.play().catch(e => console.error("Lỗi phát:", e));
