@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gửi bé iu của anh nhá</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+
+    :root{
+      --accent:#e91e63;
+      --soft:#ffb6c1;
+    }
+    body.page-person{
+      background-image: url('./img/backgound.jpg'); /* Đặt ảnh làm nền */
+      background-size: cover; /* Đảm bảo ảnh phủ kín toàn bộ trang */
+      background-position: center; /* Căn giữa ảnh nền */
+      background-attachment: fixed; /* Giữ ảnh nền cố định khi cuộn */
+      background-color: #ede7f6; /* Màu dự phòng nếu ảnh không tải được */
+      
+      /* Giữ nguyên các thuộc tính cũ của body.page-person */
+      font-family:'Roboto',sans-serif;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      padding:18px;
+      text-align:center;
+      overflow:hidden;
+      position:relative;
+    }
+
+    h1{font-size:1.5rem;font-weight:700;color:#333;margin-bottom:6px;}
+    p{color:#555;margin-bottom:12px;}
+
+    /* photo box */
+    .photo-container{
+      border:6px solid var(--soft);
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 0 15px var(--soft);
+      transition:all .45s ease;
+      width:320px;
+      max-width:90vw;
+    }
+    .photo-container img{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:8px;
+      transition:transform .25s ease,filter .25s ease;
+    }
+
+    /* heart button & controls */
+    .controls {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-top:16px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .heart-btn{
+      font-size:48px;
+      color:var(--accent);
+      cursor:pointer;
+      transition:transform .18s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .heart-btn:active{transform:scale(.95);}
+    .sound-toggle{
+      background:#fff;border:1px solid #eee;padding:8px 10px;border-radius:8px;cursor:pointer;
+      box-shadow:0 2px 6px rgba(0,0,0,.06);
+      font-weight:500;
+    }
+
+    /* progress */
+    .progress-wrap{width:320px;max-width:90vw;margin-top:14px;}
+    .progress {
+      background:#fff;border-radius:999px;padding:6px;border:1px solid #f0e7ee;
+      display:flex;align-items:center;gap:8px;
+    }
+    .progress-bar{
+      height:10px;background:linear-gradient(90deg,var(--accent),#ff80ab);
+      border-radius:999px;transition:width .35s ease;width:0%;
+    }
+    .progress-info{font-size:13px;color:#555;font-weight:500;}
+
+    /* floating icons */
+    .floating-heart,.floating-flower{
+      position:absolute;font-size:22px;pointer-events:none;animation:floatUp 3s ease-out forwards;z-index:20;
+    }
+    .floating-heart{color:var(--accent)}
+    .floating-flower{color:#ff80ab}
+
+    @keyframes floatUp{
+      0%{opacity:1;transform:translateY(0) scale(1)}
+      100%{opacity:0;transform:translateY(-220px) scale(1.6)}
+    }
+
+    /* falling flowers (background) */
+    .flower{position:absolute;top:-40px;font-size:20px;animation:fall linear infinite;opacity:.85;color:#ff80ab;pointer-events:none;z-index:0}
+    @keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+
+    /* confetti burst on complete */
+    .confetti {
+      position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:40;
+    }
+    .confetti-piece{position:absolute;font-size:18px;opacity:0;animation:confettiFly .9s forwards}
+    @keyframes confettiFly{
+      0%{transform:translateY(0) rotate(0) scale(.8);opacity:1}
+      100%{transform:translateY(-300px) translateX(var(--tx,0px)) rotate(720deg) scale(1);opacity:0}
+    }
+
+    .fade-out{opacity:0;transition:opacity 1s ease}
+
+    .actions { margin-top:14px; display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    .btn { background:var(--accent); color:#fff; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; border:none; }
+    .btn.secondary { background:#fff; color:var(--accent); border:1px solid #ffd6e8; }
+
+    /* responsive tweaks */
+    @media (max-width:460px){
+      .photo-container{width:88vw}
+      .progress-wrap{width:88vw}
+      .heart-btn{font-size:42px}
+    }
+    .explosion-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%);
+  z-index: 100;
+  pointer-events: none;
+  animation: flashFade 0.6s ease-out forwards;
+}
+@keyframes flashFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.explosion-wave {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 4px solid rgba(255,0,100,0.6);
+  transform: translate(-50%, -50%) scale(0);
+  animation: waveExpand 1s ease-out forwards;
+  pointer-events: none;
+  z-index: 90;
+}
+@keyframes waveExpand {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+}
+  </style>
+</head>
+<body class="page-person">
+  <h1 class="text-2xl">Gửi tặng bé iu của anh 💝</h1>
+  <p class="text-gray-600">Nhấn vào trái tim để mở món quà nhé!</p>
+
+  <div class="photo-container" id="photoBox" aria-live="polite" aria-label="Hộp quà">
+    <img src="./img/1.jpg" alt="Hình quà" id="giftImage">
+  </div>
+
+  <div class="controls" role="group" aria-label="Tương tác">
+    <div id="heartBtn" class="heart-btn" role="button" tabindex="0" aria-pressed="false" aria-label="Nhấn để gửi trái tim">❤️</div>
+    <button id="soundToggle" class="sound-toggle" aria-pressed="true">🔊 Bật âm</button>
+  </div>
+
+  <div class="progress-wrap" aria-hidden="false">
+    <div class="progress" style="margin-bottom:8px;">
+      <div style="flex:1">
+        <div style="background:#fafafa;border-radius:999px;padding:4px;">
+          <div id="progressBar" class="progress-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div style="width:96px;text-align:right;">
+        <div id="progressText" class="progress-info">0 / 6</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:#666">Nhấn trái tim <strong id="remaining">6</strong> lần để mở quà</div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button id="viewGiftBtn" class="btn" style="display:none">Xem quà 🎁</button>
+    <button id="downloadBtn" class="btn secondary" style="display:none">Tải ảnh</button>
+  </div>
+
+  <!-- confetti layer -->
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+  <!-- background flowers -->
+  <script>
+    // tạo hoa rơi nền
+    function spawnFlower() {
+      const f = document.createElement('div');
+      f.className = 'flower';
+      
+      // === SỬA 1: THÊM TIM ===
+      const icons = ['🌸', '💖', '❤️'];
+      f.textContent = icons[Math.floor(Math.random() * icons.length)];
+      
+      f.style.left = (Math.random()*100)+'%';
+      f.style.animationDuration = `${5 + Math.random()*6}s`;
+      f.style.fontSize = `${12 + Math.random()*18}px`;
+      document.body.appendChild(f);
+      setTimeout(()=>f.remove(), 11000);
+    }
+    // spawn nhiều lần nhẹ nhàng
+    
+    // === SỬA 2: RƠI NHANH HƠN ===
+    const flowerTimer = setInterval(spawnFlower, 300); // Rơi nhiều hơn (giảm từ 700 xuống 200)
+  </script>
+
+  <!-- sounds (heartbeat + paper rustle optional) -->
+  <audio id="heartbeatSound" preload="auto">
+    <source src="./audio/mtp.m4a" type="audio/mp4">
+  </audio>
+  
+  <audio id="openSound" preload="auto">
+    <source src="./audio/ding.mp3" type="audio/mp4">
+  </audio>
+  
+
+  <script>
+    (function(){
+      const heartBtn = document.getElementById('heartBtn');
+      const photoBox = document.getElementById('photoBox');
+      const giftImage = document.getElementById('giftImage');
+      const heartbeatSound = document.getElementById('heartbeatSound');
+      const openSound = document.getElementById('openSound');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      const remainingText = document.getElementById('remaining');
+      const soundToggle = document.getElementById('soundToggle');
+      const viewGiftBtn = document.getElementById('viewGiftBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const confettiLayer = document.getElementById('confetti');
+    
+      // ✅ Tăng số click cần thiết lên 10
+      const maxClicks = 10;
+      let clicks = Number(sessionStorage.getItem('giftClicks_ngan') || 0);
+      let soundOn = true;
+      let musicStarted = false; // để chỉ phát nhạc lần đầu
+    
+      // Khi load lại trang: cập nhật UI
+      updateUI();
+    
+      function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
+    
+      function updateUI(){
+        const pct = Math.min(100, Math.round((clicks / maxClicks) * 100));
+        progressBar.style.width = pct + '%';
+        progressText.textContent = `${clicks} / ${maxClicks}`;
+        remainingText.textContent = Math.max(0, maxClicks - clicks);
+        if(clicks >= maxClicks){
+          viewGiftBtn.style.display = 'inline-block';
+          downloadBtn.style.display = 'inline-block';
+        } else {
+          viewGiftBtn.style.display = 'none';
+          downloadBtn.style.display = 'none';
+        }
+      }
+    
+      function createFloating(icon){
+        const el = document.createElement('div');
+        el.className = (icon==='❤️') ? 'floating-heart' : 'floating-flower';
+        el.textContent = icon;
+        el.style.left = (10 + Math.random() * 80)+'%';
+        el.style.bottom = (90 + Math.random()*40)+'px';
+        el.style.fontSize = (18 + Math.random()*22)+'px';
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 3000);
+      }
+    
+      function confettiBurst(){
+    // 🌸💖 hiệu ứng hoa tim nổ mạnh hơn
+    const count = 80; // tăng số lượng mảnh
+    for(let i=0;i<count;i++){
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.textContent = (Math.random() > 0.5) ? '💖' : (Math.random()>0.25 ? '🌸' : '✨');
+        piece.style.left = (50 + (Math.random()*20 - 10)) + '%';
+        piece.style.top = (50 + (Math.random()*20 - 10)) + '%';
+        piece.style.setProperty('--tx', `${(Math.random()*1600 - 800)}px`);
+        piece.style.fontSize = (16 + Math.random()*30) + 'px';
+        piece.style.animationDuration = (0.9 + Math.random()*0.6) + 's';
+        confettiLayer.appendChild(piece);
+        setTimeout(()=>piece.remove(), 2000);
+    }
+
+    // 💥 thêm ánh sáng chớp và sóng nổ lan tỏa
+    const flash = document.createElement('div');
+    flash.className = 'explosion-flash';
+    document.body.appendChild(flash);
+    setTimeout(()=>flash.remove(), 600);
+
+    const wave = document.createElement('div');
+    wave.className = 'explosion-wave';
+    document.body.appendChild(wave);
+    setTimeout(()=>wave.remove(), 1000);
+
+    // 📣 hiệu ứng rung mạnh hơn khi nổ
+    if (navigator.vibrate) navigator.vibrate([80,40,120]);
+
+    // 💫 tăng độ sáng hộp ảnh tạm thời
+    photoBox.style.transition = 'filter 0.6s ease';
+    photoBox.style.filter = 'brightness(1.6)';
+    setTimeout(()=>photoBox.style.filter='brightness(1)',600);
+    }
+
+    
+      function downloadImage(){
+        const link = document.createElement('a');
+        link.href = giftImage.src;
+        link.download = 'monqua.jpg';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    
+      // 💖 Sửa lỗi chồng nhạc + tăng 10 lần click
+      function handleClick(){
+        // Chỉ phát nhạc nền lần đầu (hoặc khi đã bị dừng)
+        if (!musicStarted && soundOn) {
+          heartbeatSound.loop = true; // 🔁 nhạc nền sẽ lặp
+          heartbeatSound.currentTime = 0;
+          heartbeatSound.play().catch(()=>{});
+          musicStarted = true;
+        }
+    
+        if(clicks >= maxClicks) {
+          createFloating('❤️');
+          vibrate(30);
+          return;
+        }
+    
+        clicks++;
+        sessionStorage.setItem('giftClicks_ngan', clicks);
+    
+        // Hiệu ứng giấy sột soạt (nếu bật âm)
+        if(soundOn && musicStarted && clicks < maxClicks){
+          openSound.currentTime = 0;
+          openSound.play().catch(()=>{});
+        }
+    
+        vibrate(18);
+        giftImage.classList.add('shake');
+        giftImage.style.filter = 'brightness(1.16)';
+        setTimeout(()=>{ giftImage.classList.remove('shake'); giftImage.style.filter = 'brightness(1)'; }, 350);
+    
+        createFloating(Math.random()>0.5 ? '❤️' : '🌸');
+        const glow = Math.min(25 + clicks*6, 140);
+        photoBox.style.boxShadow = `0 0 ${glow}px rgba(255,0,80,0.35)`;
+        photoBox.style.borderColor = `rgb(${Math.min(255, clicks*40)}, ${120 - clicks*8}, ${150 - clicks*10})`;
+    
+        updateUI();
+    
+        if(clicks >= maxClicks){
+          confettiBurst();
+          vibrate([60,30,60]);
+          setTimeout(()=> { viewGiftBtn.focus(); },400);
+        }
+      }
+    
+      // 🔈 Nút bật/tắt âm
+      soundToggle.addEventListener('click', ()=>{
+        soundOn = !soundOn;
+        soundToggle.textContent = soundOn ? '🔊 Bật âm' : '🔈 Tắt âm';
+        soundToggle.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+    
+        if (!soundOn) {
+          heartbeatSound.pause();
+          openSound.pause();
+        } else {
+          // nếu bật lại mà nhạc từng phát rồi, resume lại
+          if (musicStarted) heartbeatSound.play().catch(()=>{});
+        }
+      });
+    
+      heartBtn.addEventListener('click', handleClick);
+      heartBtn.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter' || e.key===' ') { e.preventDefault(); handleClick(); }
+      });
+    
+      viewGiftBtn.addEventListener('click', ()=>{
+        photoBox.style.transform = 'scale(1.03)';
+        photoBox.style.transition = 'transform .35s ease';
+        sessionStorage.removeItem('giftClicks_ngan');
+        setTimeout(()=> { document.body.classList.add('fade-out'); window.location.href = 'lovengan.html'; }, 600);
+      });
+    
+      downloadBtn.addEventListener('click', downloadImage);
+    
+      document.addEventListener('keydown', (e)=>{
+        if(e.code === 'Space'){
+          e.preventDefault();
+          handleClick();
+        }
+      });
+    
+    })();
+    window.addEventListener('pageshow', function(event) {
+        // event.persisted = true nghĩa là trang được tải từ bfcache
+        if (event.persisted) {
+            console.log('Page loaded from bfcache. Re-initializing UI and effects.');
+            
+            // 1. Đọc lại số click (đã được reset về 0)
+            // Cần truy cập biến 'clicks' bên trong IIFE, nên cần khai báo lại ở đây
+            let clicksBfcache = Number(sessionStorage.getItem('giftClicks_nguyet') || 0); 
+            
+            // 2. Cập nhật lại giao diện (hiển thị đúng thanh progress, nút bấm)
+            // Gọi lại hàm updateUI với giá trị click mới đọc
+            const progressBarBfcache = document.getElementById('progressBar');
+            const progressTextBfcache = document.getElementById('progressText');
+            const remainingTextBfcache = document.getElementById('remaining');
+            const viewGiftBtnBfcache = document.getElementById('viewGiftBtn');
+            const downloadBtnBfcache = document.getElementById('downloadBtn');
+            const maxClicksBfcache = 10; // Cần định nghĩa lại maxClicks ở đây
+
+            const pct = Math.min(100, Math.round((clicksBfcache / maxClicksBfcache) * 100));
+            progressBarBfcache.style.width = pct + '%';
+            progressTextBfcache.textContent = `${clicksBfcache} / ${maxClicksBfcache}`;
+            remainingTextBfcache.textContent = Math.max(0, maxClicksBfcache - clicksBfcache);
+            if(clicksBfcache >= maxClicksBfcache){
+              viewGiftBtnBfcache.style.display = 'inline-block';
+              downloadBtnBfcache.style.display = 'inline-block';
+            } else {
+              viewGiftBtnBfcache.style.display = 'none';
+              downloadBtnBfcache.style.display = 'none';
+            }
+            
+            // 3. Khởi động lại hiệu ứng hoa rơi (quan trọng)
+            // Dừng timer cũ (nếu có) và khởi động lại
+            if (window.flowerTimer) clearInterval(window.flowerTimer); 
+            window.flowerTimer = setInterval(spawnFlower, 300); // Khởi động lại
+        }
+    });
+    </script>
+    
+    
+</body>
+</html>

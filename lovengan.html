@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ảnh Ngẫu Nhiên ❤️</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS căn giữa video và lớp hiển thị */
+        #centralVideo {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 80vw;
+            max-height: 70vh;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.5);
+            z-index: 10;
+            object-fit: cover;
+        }
+
+        #rain-container {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+        }
+
+        #popup {
+            z-index: 100;
+        }
+
+        /* === CSS CHO BẢNG CÂU HỎI VÀ NÚT BẤM === */
+        #decisionOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75); 
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200; 
+            font-family: Arial, sans-serif;
+            backdrop-filter: blur(5px);
+        }
+
+        #decisionOverlay h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px #e91e63;
+            text-align: center;
+        }
+
+        .btn-container {
+            position: relative;
+            width: 300px;
+            height: 100px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .btn-decision {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        #btnAgree {
+            background-color: #ff4081;
+            color: white;
+        }
+
+        #btnAgree:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(255, 64, 129, 0.6);
+        }
+
+        #btnDecline {
+            background-color: #e0e0e0;
+            color: #333;
+            position: absolute; 
+            right: 10px;
+            transition: all 0.1s; /* Thêm tí mượt mà khi nút bay đi */
+        }
+    </style>
+</head>
+<body>
+
+    <video id="centralVideo" src="./img/video.mp4" autoplay controls playsinline></video>
+
+    <div id="rain-container"></div>
+
+    <div id="decisionOverlay">
+        <h2>Yêu anh chứ? ❤️</h2>
+        <div class="btn-container">
+            <button id="btnAgree" class="btn-decision">Đồng ý</button>
+            <button id="btnDecline" class="btn-decision">Từ chối</button>
+        </div>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-button" id="closePopupButton">&times;</span>
+            <img id="popupImg" src="" alt="Ảnh phóng to">
+            <p id="popupMessage" class="popup-message"></p>
+        </div>
+    </div>
+
+<script>
+    const popup = document.getElementById('popup');
+    const popupImg = document.getElementById('popupImg');
+    const popupMessage = document.getElementById('popupMessage');
+    const rainContainer = document.getElementById('rain-container');
+    const centralVideo = document.getElementById('centralVideo'); 
+    const closePopupButton = document.getElementById('closePopupButton');
+
+    const decisionOverlay = document.getElementById('decisionOverlay');
+    const btnAgree = document.getElementById('btnAgree');
+    const btnDecline = document.getElementById('btnDecline');
+    let hasShownDecision = false;
+
+    let imageTimer = null;
+    let flowerTimer = null;
+    const imageUrls = [
+        './img/1.jpg', './img/2.jpg', './img/3.jpg', './img/4.jpg',
+        './img/5.jpg', './img/6.jpg', './img/7.jpg', './img/8.jpg',
+        './img/9.jpg', './img/10.jpg', './img/11.jpg', './img/12.jpg',
+        './img/13.jpg', './img/14.jpg', './img/15.jpg', './img/16.jpg',
+        './img/17.jpg', './img/18.jpg', './img/19.jpg'    
+    ];
+
+    // === HIỆN BẢNG CÂU HỎI KHI VIDEO KẾT THÚC LẦN ĐẦU ===
+    centralVideo.addEventListener('ended', () => {
+        if (!hasShownDecision) {
+            hasShownDecision = true;
+            decisionOverlay.style.display = 'flex'; 
+        }
+    });
+
+    // === CHỨC NĂNG: NÚT "TỪ CHỐI" TROLL (HỖ TRỢ ĐIỆN THOẠI) ===
+    function moveDeclineButton(e) {
+        if (e) e.preventDefault(); // Chặn click trên điện thoại
+
+        btnDecline.style.position = 'fixed';
+        
+        const maxX = window.innerWidth - btnDecline.offsetWidth - 20; // Trừ hao lề
+        const maxY = window.innerHeight - btnDecline.offsetHeight - 20;
+        
+        const randomX = Math.floor(Math.random() * maxX) + 10;
+        const randomY = Math.floor(Math.random() * maxY) + 10;
+        
+        btnDecline.style.left = randomX + 'px';
+        btnDecline.style.top = randomY + 'px';
+    }
+
+    btnDecline.addEventListener('mouseover', moveDeclineButton);
+    btnDecline.addEventListener('touchstart', moveDeclineButton, { passive: false });
+    btnDecline.addEventListener('click', moveDeclineButton);
+
+
+    // === CHỨC NĂNG: BẤM "ĐỒNG Ý" ===
+    btnAgree.addEventListener('click', () => {
+        decisionOverlay.style.display = 'none';
+        centralVideo.loop = true;
+        centralVideo.play();
+        triggerHeartExplosion();
+    });
+
+    function triggerHeartExplosion() {
+        for (let i = 0; i < 80; i++) {
+            setTimeout(() => {
+                const heart = document.createElement('div');
+                heart.innerHTML = '💖';
+                heart.style.position = 'fixed';
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                heart.style.zIndex = '9999';
+                heart.style.pointerEvents = 'none'; 
+                heart.style.transition = 'all 2s cubic-bezier(0.25, 1, 0.5, 1)';
+                
+                document.body.appendChild(heart);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * (window.innerWidth * 0.5) + 50; 
+                
+                setTimeout(() => {
+                    heart.style.transform = `translate(${Math.cos(angle) * radius}px, ${Math.sin(angle) * radius}px) scale(0) rotate(${Math.random() * 360}deg)`;
+                    heart.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => heart.remove(), 2000);
+            }, i * 15); 
+        }
+    }
+
+
+    // === CÁC CHỨC NĂNG ẢNH VÀ HOA RƠI ===
+    function createRandomImage() {
+        const img = document.createElement('img');
+        img.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+        img.classList.add('random-image');
+        img.style.left = `${10 + Math.random() * 80}vw`;
+        img.style.top = `${25 + Math.random() * 65}vh`;
+        img.style.cursor = "pointer";
+
+        img.addEventListener('click', () => {
+            stopEffects(); 
+            centralVideo.pause();
+            popupImg.src = img.src;
+            popup.classList.add('active');
+        });
+
+        rainContainer.appendChild(img);
+        setTimeout(() => img.remove(), 3500);
+    }
+
+    function spawnFlower() {
+        const f = document.createElement('div');
+        f.className = 'flower';
+        const icons = ['🌸', '💖', '❤️'];
+        const icon = icons[Math.floor(Math.random() * icons.length)];
+        f.textContent = icon;
+        f.style.left = (Math.random()*100)+'%';
+        f.style.animationDuration = `${5 + Math.random()*6}s`;
+        f.style.fontSize = `${12 + Math.random()*18}px`;
+        f.style.position = 'absolute';
+        f.style.zIndex = '5'; 
+
+        if (icon !== '🌸') f.style.color = '#e91e63';
+
+        document.body.appendChild(f);
+        setTimeout(()=>f.remove(), 11000);
+    }
+
+    function closePopup() {
+        popup.classList.remove("active");
+        startEffects(); 
+        centralVideo.play(); 
+    }
+
+    popup.addEventListener("click", (e) => {
+        if (e.target === popup) closePopup();
+    });
+
+    closePopupButton.addEventListener("click", closePopup);
+
+    function startEffects() {
+        if (!imageTimer) imageTimer = setInterval(createRandomImage, 300);
+        if (!flowerTimer) flowerTimer = setInterval(spawnFlower, 130); 
+    }
+
+    function stopEffects() {
+        clearInterval(imageTimer);
+        clearInterval(flowerTimer);
+        imageTimer = null;
+        flowerTimer = null;
+        rainContainer.innerHTML = '';
+        const flowers = document.querySelectorAll('.flower');
+        flowers.forEach(flower => flower.remove());
+    }
+
+    startEffects();
+
+    document.body.addEventListener('click', () => {
+        if (centralVideo.paused && !hasShownDecision) {
+            centralVideo.play().catch(e => console.error("Lỗi phát:", e));
+        }
+    }, { once: true }); 
+</script>
+</body>
+</html>
