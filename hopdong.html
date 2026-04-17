@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hợp Đồng Tình Yêu 📜❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: #ffe4e1;
+            background-image: radial-gradient(#ffb6c1 1px, transparent 1px);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden; /* Tránh thanh cuộn khi pháo nổ */
+        }
+
+        .certificate {
+            background: #fff;
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(233, 30, 99, 0.2);
+            position: relative;
+            z-index: 10;
+        }
+
+        .certificate-inner {
+            border: 3px dashed #ff80ab;
+            border-radius: 8px;
+            padding: 30px 20px;
+            background: #fffaf0;
+            text-align: center;
+        }
+
+        .title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #e91e63;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(233,30,99,0.2);
+        }
+
+        .terms {
+            text-align: left;
+            font-size: 0.95rem;
+            color: #555;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffe4e1;
+        }
+
+        .terms li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        /* Khung ký tên */
+        .signature-area {
+            margin-top: 20px;
+        }
+
+        canvas {
+            border-bottom: 2px solid #555;
+            background: transparent;
+            cursor: crosshair;
+            touch-action: none;
+            width: 100%;
+            max-width: 300px;
+            height: 120px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .btn-clear {
+            background: transparent;
+            color: #888;
+            border: none;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .btn-submit {
+            background: linear-gradient(45deg, #e91e63, #ff4081);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            margin-top: 25px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal thành công */
+        #successModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 300px;
+            transform: scale(0.5);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #successModal.active {
+            opacity: 1;
+        }
+        #successModal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        /* Animation rung khi chốt đơn */
+        .shake-hard {
+            animation: shake-hard 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake-hard {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate3d(-10px, 0, 0) rotate(-2deg); }
+            20%, 40%, 60%, 80% { transform: translate3d(10px, 0, 0) rotate(2deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="certificate" id="certBox">
+        <div class="certificate-inner">
+            <div class="text-4xl mb-2">📜</div>
+            <h1 class="title">Giấy Chứng Nhận<br>Tình Yêu</h1>
+            
+            <p class="text-gray-600 font-semibold mb-4 text-sm">Hôm nay, hai bên tự nguyện lập bản hợp đồng này với các điều khoản sau:</p>
+
+            <ul class="terms list-disc pl-5">
+                <li><b>Bên A (Anh):</b> Hứa sẽ không bao giờ to tiếng, nhường nhịn, và đưa Bên B đi ăn chơi mỗi khi Bên B buồn.Luôn luôn đội bên B lên đầu</li>
+                <li><b>Bên B (Bé):</b> Được quyền dỗi, nhưng dỗi phải cho Bên A dỗ. Không được bỏ bữa!</li>
+                <li><b>Cam kết chung:</b> Nắm tay nhau thật chặt, có chuyện gì cũng phải nói cho nhau nghe.</li>
+                <li><b>Thời hạn hợp đồng:</b> Vô thời hạn (Trọn đời).</li>
+            </ul>
+
+            <div class="signature-area">
+                <p class="text-gray-500 font-bold mb-1">Bên B ký và ghi rõ họ tên nè 👇</p>
+                <canvas id="signaturePad"></canvas>
+                <button class="btn-clear" id="clearBtn">Ký xấu quá, ký lại!</button>
+            </div>
+
+            <button class="btn-submit" id="submitBtn">Đóng Dấu Ký Kết 💌</button>
+        </div>
+    </div>
+
+    <div id="successModal">
+        <div class="modal-content">
+            <div class="text-6xl mb-4">💍</div>
+            <h2 class="text-2xl font-bold text-pink-600 mb-2">Chốt Đơn!</h2>
+            <p class="text-gray-600 mb-4">Hợp đồng đã có hiệu lực. Từ giờ bé là của anh gòy nhaaaa! Yêu em ❤️</p>
+            <p class="text-xs text-gray-400">(Chụp màn hình lại làm bằng chứng đi nè)</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        const clearBtn = document.getElementById('clearBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const successModal = document.getElementById('successModal');
+        const certBox = document.getElementById('certBox');
+
+        function resizeCanvas() {
+            const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            ctx.scale(ratio, ratio);
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#e91e63'; 
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let hasSigned = false; 
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches) { 
+                return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+            }
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            hasSigned = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function stopDrawing() { isDrawing = false; }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSigned = false;
+        });
+
+        // HÀM TẠO SIÊU VỤ NỔ (MEGA EXPLOSION)
+        function triggerMegaExplosion() {
+            const emojis = ['💖', '💕', '✨', '🌸', '💍', '🥂', '🎉', '💌'];
+            const numParticles = 120; // Số lượng vật thể bay ra
+            
+            // Hiệu ứng chớp lóe sáng màn hình
+            const flash = document.createElement('div');
+            flash.style.position = 'fixed';
+            flash.style.inset = '0';
+            flash.style.background = 'white';
+            flash.style.zIndex = '9998';
+            flash.style.pointerEvents = 'none';
+            flash.style.transition = 'opacity 0.6s ease-out';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => { flash.style.opacity = '0'; }, 50);
+            setTimeout(() => { flash.remove(); }, 650);
+
+            // Bắn các emoji ra tứ phía
+            for(let i=0; i<numParticles; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                    particle.style.position = 'fixed';
+                    // Bắt đầu nổ từ giữa màn hình
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.fontSize = (Math.random() * 25 + 15) + 'px';
+                    particle.style.zIndex = '9999';
+                    particle.style.pointerEvents = 'none';
+                    particle.style.transition = 'all 1.5s cubic-bezier(0.1, 0.8, 0.3, 1)'; // Chuyển động bay vọt ra
+                    
+                    document.body.appendChild(particle);
+                    
+                    // Tính toán góc và độ xa để bay tỏa tròn (Toán học xíu ^^)
+                    const angle = Math.random() * Math.PI * 2;
+                    // Bay rộng ra khỏi màn hình
+                    const radius = Math.random() * (Math.max(window.innerWidth, window.innerHeight)) + 100; 
+                    const tx = Math.cos(angle) * radius;
+                    const ty = Math.sin(angle) * radius;
+                    
+                    // Kích hoạt bay sau 1 nhịp
+                    setTimeout(() => {
+                        particle.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${Math.random() * 720 - 360}deg) scale(${Math.random() * 1.5 + 0.5})`;
+                        particle.style.opacity = '0'; // Mờ dần khi bay xa
+                    }, 10);
+                    
+                    // Dọn dẹp DOM
+                    setTimeout(() => particle.remove(), 1600);
+                }, i * 5); // Bắn liên tục
+            }
+
+            // Rung mạnh nếu điện thoại hỗ trợ (tạo cảm giác chấn động)
+            if (navigator.vibrate) navigator.vibrate([100, 50, 200, 50, 100]);
+        }
+
+        // Nút Chốt đơn
+        submitBtn.addEventListener('click', () => {
+            if (!hasSigned) {
+                alert("Ơ kìa, bé chưa ký tên xác nhận nè! 🖊️");
+                return;
+            }
+            
+            // 1. Rung toàn bộ form hợp đồng
+            certBox.classList.add('shake-hard');
+            
+            // 2. Kích hoạt siêu vụ nổ
+            triggerMegaExplosion();
+
+            // 3. Đợi nổ xong một nửa thời gian thì hiện Modal lên
+            setTimeout(() => {
+                successModal.style.display = 'flex';
+                // Đợi 10ms để trình duyệt render rồi mới thêm class active (tạo animation mượt)
+                setTimeout(() => {
+                    successModal.classList.add('active');
+                }, 10);
+            }, 800);
+        });
+    </script>
+</body>
+</html>
