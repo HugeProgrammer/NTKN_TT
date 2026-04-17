@@ -6,6 +6,9 @@
     <title>Hợp Đồng Tình Yêu 📜❤️</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
@@ -14,10 +17,8 @@
             background-size: 20px 20px;
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow: hidden; /* Tránh thanh cuộn khi pháo nổ */
+            padding: 40px 20px; /* Thêm khoảng cách trên dưới để khi cuộn không bị sát mép */
+            overflow-x: hidden;
         }
 
         .certificate {
@@ -29,6 +30,7 @@
             box-shadow: 0 15px 35px rgba(233, 30, 99, 0.2);
             position: relative;
             z-index: 10;
+            margin: auto;
         }
 
         .certificate-inner {
@@ -109,6 +111,36 @@
             transform: scale(0.95);
         }
 
+        /* Nút tải ảnh */
+        .btn-download {
+            background: linear-gradient(45deg, #ff4081, #f50057);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-download:active {
+            transform: scale(0.95);
+        }
+
+        .btn-download:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         /* Modal thành công */
         #successModal {
             position: fixed;
@@ -125,10 +157,11 @@
 
         .modal-content {
             background: white;
-            padding: 40px 20px;
+            padding: 30px 20px;
             border-radius: 20px;
             text-align: center;
-            max-width: 300px;
+            max-width: 320px;
+            width: 90%;
             transform: scale(0.5);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -140,7 +173,6 @@
             transform: scale(1);
         }
         
-        /* Animation rung khi chốt đơn */
         .shake-hard {
             animation: shake-hard 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
@@ -161,7 +193,7 @@
             <p class="text-gray-600 font-semibold mb-4 text-sm">Hôm nay, hai bên tự nguyện lập bản hợp đồng này với các điều khoản sau:</p>
 
             <ul class="terms list-disc pl-5">
-                <li><b>Bên A (Anh):</b> Hứa sẽ không bao giờ to tiếng, nhường nhịn, và đưa Bên B đi ăn chơi mỗi khi Bên B buồn.Luôn luôn đội bên B lên đầu</li>
+                <li><b>Bên A (Anh):</b> Hứa sẽ không bao giờ to tiếng, nhường nhịn, và đưa Bên B đi ăn chơi mỗi khi Bên B buồn. Luôn luôn đội bên B lên đầu.</li>
                 <li><b>Bên B (Bé):</b> Được quyền dỗi, nhưng dỗi phải cho Bên A dỗ. Không được bỏ bữa!</li>
                 <li><b>Cam kết chung:</b> Nắm tay nhau thật chặt, có chuyện gì cũng phải nói cho nhau nghe.</li>
                 <li><b>Thời hạn hợp đồng:</b> Vô thời hạn (Trọn đời).</li>
@@ -173,16 +205,20 @@
                 <button class="btn-clear" id="clearBtn">Ký xấu quá, ký lại!</button>
             </div>
 
-            <button class="btn-submit" id="submitBtn">Đóng Dấu Ký Kết 💌</button>
+            <button class="btn-submit" id="submitBtn" data-html2canvas-ignore>Đóng Dấu Ký Kết 💌</button>
         </div>
     </div>
 
     <div id="successModal">
         <div class="modal-content">
-            <div class="text-6xl mb-4">💍</div>
+            <div class="text-6xl mb-2">💍</div>
             <h2 class="text-2xl font-bold text-pink-600 mb-2">Chốt Đơn!</h2>
-            <p class="text-gray-600 mb-4">Hợp đồng đã có hiệu lực. Từ giờ bé là của anh gòy nhaaaa! Yêu em ❤️</p>
-            <p class="text-xs text-gray-400">(Chụp màn hình lại làm bằng chứng đi nè)</p>
+            <p class="text-gray-600 mb-4 text-sm">Hợp đồng đã có hiệu lực. Từ giờ bé là của anh gòy nhaaaa! Yêu em ❤️</p>
+            
+            <button id="downloadBtn" class="btn-download">
+                📥 Tải Hợp Đồng Về Máy
+            </button>
+            <p class="text-xs text-gray-400 mt-3">(Nhớ khoe cho mọi người biết nha)</p>
         </div>
     </div>
 
@@ -193,6 +229,7 @@
         const submitBtn = document.getElementById('submitBtn');
         const successModal = document.getElementById('successModal');
         const certBox = document.getElementById('certBox');
+        const downloadBtn = document.getElementById('downloadBtn'); // Nút tải
 
         function resizeCanvas() {
             const ratio =  Math.max(window.devicePixelRatio || 1, 1);
@@ -257,12 +294,10 @@
             hasSigned = false;
         });
 
-        // HÀM TẠO SIÊU VỤ NỔ (MEGA EXPLOSION)
         function triggerMegaExplosion() {
             const emojis = ['💖', '💕', '✨', '🌸', '💍', '🥂', '🎉', '💌'];
-            const numParticles = 120; // Số lượng vật thể bay ra
+            const numParticles = 120; 
             
-            // Hiệu ứng chớp lóe sáng màn hình
             const flash = document.createElement('div');
             flash.style.position = 'fixed';
             flash.style.inset = '0';
@@ -275,65 +310,97 @@
             setTimeout(() => { flash.style.opacity = '0'; }, 50);
             setTimeout(() => { flash.remove(); }, 650);
 
-            // Bắn các emoji ra tứ phía
             for(let i=0; i<numParticles; i++) {
                 setTimeout(() => {
                     const particle = document.createElement('div');
                     particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
                     particle.style.position = 'fixed';
-                    // Bắt đầu nổ từ giữa màn hình
                     particle.style.left = '50%';
                     particle.style.top = '50%';
                     particle.style.fontSize = (Math.random() * 25 + 15) + 'px';
                     particle.style.zIndex = '9999';
                     particle.style.pointerEvents = 'none';
-                    particle.style.transition = 'all 1.5s cubic-bezier(0.1, 0.8, 0.3, 1)'; // Chuyển động bay vọt ra
+                    particle.style.transition = 'all 1.5s cubic-bezier(0.1, 0.8, 0.3, 1)'; 
                     
                     document.body.appendChild(particle);
                     
-                    // Tính toán góc và độ xa để bay tỏa tròn (Toán học xíu ^^)
                     const angle = Math.random() * Math.PI * 2;
-                    // Bay rộng ra khỏi màn hình
                     const radius = Math.random() * (Math.max(window.innerWidth, window.innerHeight)) + 100; 
                     const tx = Math.cos(angle) * radius;
                     const ty = Math.sin(angle) * radius;
                     
-                    // Kích hoạt bay sau 1 nhịp
                     setTimeout(() => {
                         particle.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${Math.random() * 720 - 360}deg) scale(${Math.random() * 1.5 + 0.5})`;
-                        particle.style.opacity = '0'; // Mờ dần khi bay xa
+                        particle.style.opacity = '0'; 
                     }, 10);
                     
-                    // Dọn dẹp DOM
                     setTimeout(() => particle.remove(), 1600);
-                }, i * 5); // Bắn liên tục
+                }, i * 5); 
             }
 
-            // Rung mạnh nếu điện thoại hỗ trợ (tạo cảm giác chấn động)
             if (navigator.vibrate) navigator.vibrate([100, 50, 200, 50, 100]);
         }
 
-        // Nút Chốt đơn
         submitBtn.addEventListener('click', () => {
             if (!hasSigned) {
                 alert("Ơ kìa, bé chưa ký tên xác nhận nè! 🖊️");
                 return;
             }
             
-            // 1. Rung toàn bộ form hợp đồng
             certBox.classList.add('shake-hard');
-            
-            // 2. Kích hoạt siêu vụ nổ
             triggerMegaExplosion();
 
-            // 3. Đợi nổ xong một nửa thời gian thì hiện Modal lên
             setTimeout(() => {
                 successModal.style.display = 'flex';
-                // Đợi 10ms để trình duyệt render rồi mới thêm class active (tạo animation mượt)
                 setTimeout(() => {
                     successModal.classList.add('active');
                 }, 10);
             }, 800);
+        });
+
+        // HÀM XỬ LÝ KHI BẤM NÚT TẢI ẢNH
+        downloadBtn.addEventListener('click', () => {
+            // Đổi hiệu ứng nút để báo đang xử lý
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = "⏳ Đang tạo ảnh...";
+            downloadBtn.disabled = true;
+
+            // Ẩn chữ "Ký xấu quá, ký lại!" đi trước khi chụp để ảnh đẹp hơn
+            clearBtn.style.display = 'none';
+
+            // Gọi hàm html2canvas chụp thẻ certBox
+            html2canvas(certBox, {
+                scale: 2, // Tăng độ phân giải ảnh x2 cho nét
+                backgroundColor: "#ffe4e1", // Để nền màu hồng nhạt khớp viền
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                // Biến canvas thành link tải ảnh PNG
+                const imgData = canvas.toDataURL("image/png");
+                
+                // Tạo một thẻ <a> ẩn để tự động click tải về
+                const link = document.createElement('a');
+                link.download = 'HopDongTinhYeu_ChotDon.png';
+                link.href = imgData;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Phục hồi lại nút như cũ
+                downloadBtn.innerHTML = "✅ Đã tải xong!";
+                setTimeout(() => {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.disabled = false;
+                    clearBtn.style.display = 'inline-block'; // Hiện lại nút xóa chữ ký
+                }, 2000);
+
+            }).catch(err => {
+                console.error("Lỗi tạo ảnh: ", err);
+                alert("Úi, có lỗi lúc tạo ảnh rồi! Bé thử chụp màn hình thủ công nha.");
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+                clearBtn.style.display = 'inline-block';
+            });
         });
     </script>
 </body>
